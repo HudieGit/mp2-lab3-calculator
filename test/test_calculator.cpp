@@ -1,6 +1,8 @@
-#include "calculator.h"
 #include <gtest.h>
+#include "calculator.h"
 
-TEST(calculator, meow_test) {
+TEST(screen, mew) {
+	screen mew;
+	mew.counting();
 	EXPECT_EQ(1, 1);
 }

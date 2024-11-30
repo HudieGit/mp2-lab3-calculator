@@ -3,6 +3,8 @@
 #include <list>
 //#include <variant>
 
+using namespace std;
+
 TEST(stack, can_create_stack) {
 	stack<int, std::vector<int>> mew;
 	EXPECT_NO_THROW();

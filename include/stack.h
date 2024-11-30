@@ -13,7 +13,7 @@ private:
 
 public:
 
-	stack() : data(){} 
+	stack() : data() {}
 
 	stack(const stack& stk) {
 		data = stk.data;

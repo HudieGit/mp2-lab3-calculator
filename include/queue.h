@@ -41,7 +41,7 @@ public:
 	}
 
 	//конструктор перемещения
-	queue(queue&& q) {
+	queue(queue&& q) noexcept {
 		pMem = q.pMem;
 		front = q.front;
 		back = q.back;

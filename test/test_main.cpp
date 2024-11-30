@@ -1,4 +1,5 @@
 #include <gtest.h>
+#include "..\include\calculator.h"
 
 int main(int argc, char** argv)
 {
