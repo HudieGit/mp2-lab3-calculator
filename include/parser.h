@@ -8,8 +8,7 @@ using namespace std;
 
 class Parser {
 private:
-    std::unordered_set<std::string> con = { "pi", "e" };
-    std::unordered_set<std::string> func = { "sin", "cos", "exp", "ln" };
+
 public:
 
     bool checkSim(const vector<token>& tokens) {
@@ -56,10 +55,16 @@ public:
                 else if (tok.value == ")") { --parCount; state = 5; }
                 else return false;
                 break;
+            case 3:
+                if (tok.type == tokenType::VARIABLE || tok.type == tokenType::NUMBER || tok.type == tokenType::CONST) { state = 2; }
+                else if (tok.type == tokenType::FUNCTION) { state = 6; }
+                else return false;
+                break;
             case 4:
                 if (tok.value == "(") { ++parCount; state = 0; }
                 else if (tok.type == tokenType::FUNCTION) { state = 6; }
                 else if (tok.type == tokenType::VARIABLE || tok.type == tokenType::NUMBER || tok.type == tokenType::CONST) { state = 2; }
+                else if (tok.type == tokenType::OPERATOR) { state = 3; }
                 else return false;
                 break;
             case 5:

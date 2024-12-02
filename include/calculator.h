@@ -1,3 +1,4 @@
+#pragma once
 #include <cctype>
 #include <sstream>
 #include <iostream>
@@ -12,6 +13,7 @@ private:
 
 	double value = NOTHING;
 
+	bool isError = false;
 	string expr;
 	string simpleExpr = "";
 	
@@ -20,6 +22,8 @@ private:
 
 
 public:
+
+	expression() {}
 
 	expression(string& e) {
 		newExpr(e);
@@ -31,8 +35,10 @@ public:
 		//обработка строки и возможных ошибок
 		try {
 			value = t.logicNode(expr, variables, simpleExpr, value);
+			isError = false;
 		}
 		catch (...) {
+			isError = true;
 			type = typeExpression::ERROR;
 			cout << "incorrect expression" << endl;
 		}
@@ -43,10 +49,12 @@ public:
 		translator t;
 		//обработка строки и возможных ошибок
 		try {
+			isError = false;
 			value = t.logicNode(expr, variables, simpleExpr, value);
 		}
 
 		catch (...) {
+			isError = true;
 			cout << "incorrect expression" << endl;
 		}
 
@@ -64,6 +72,10 @@ public:
 		for (const auto& var : variables) {
 			std::cout << var.first << std::endl;
 		}
+	}
+
+	bool checkError() {
+		return isError;
 	}
 };
 
@@ -84,23 +96,28 @@ private:
 public:
 
 	void counting() {
+
 		std::string input;
-		expression expr(input);
+		expression expr;
 		do {
+			std::getline(std::cin, input);
+			expr.newExpr(input);
+			if (input == "stop") { continue; }
 
+			if (expr.getter() != NOTHING && !expr.checkError()) {
+				std::cout << "result: " << expr.getter() << endl;
+			}
 
-			expr.newExpr();
+			else {
+			}
 			//clear_screen();
 			//очистка экрана
 
 
 			//вывод последнего результата
-			if (expr.getter() != NOTHING) {
-				std::cout << "result: " << expr.getter() << endl;
-			}
-
 			//перемещение курсора
 			//std::cout << "\033[0;0H";
+
 
 		} while (input != "stop");
 	}

@@ -23,7 +23,7 @@ private:
 
 
 
-    void setTypeExp(const vector<token>& tokens, const unordered_map<string, double>& variables, string& simpleStr) {
+    void setTypeExp(const vector<token>& tokens, const unordered_map<string, double>& variables, string& simpleStr, const double& lastResult) {
 
         //считаем количество равно
         size_t countEquals = 0;
@@ -31,7 +31,7 @@ private:
             if (token.value == "=") ++countEquals;
         }
 
-        if (p.checkSim(tokens)) {
+        if (p.checkSim(tokens) && p.checkVarInEXPR(tokens, variables) && lastResult != NOTHING) {
             typeExp = typeExpression::SIMPLE;
         }
 
@@ -42,7 +42,10 @@ private:
 
         //задание переменной
         else if (countEquals == 1 && tokens[0].type == tokenType::VARIABLE && tokens[1].value == "=") {
-            typeExp = typeExpression::SET;
+            vector<token> subTokens(tokens.begin() + 2, tokens.end());
+            if (p.parserExp(subTokens) && p.checkVarInEXPR(subTokens, variables)) {
+                typeExp = typeExpression::SET;
+            }
         }
 
         //вычисление выражения
@@ -61,7 +64,7 @@ public:
 
         if (str.empty()) throw 1;
         vector<token> tokens = l.makeTokens(str); //создали токены
-        setTypeExp(tokens, variables, simpleStr); //узнали тип выражения
+        setTypeExp(tokens, variables, simpleStr, lastResult); //узнали тип выражения
 
 
         if (typeExp == typeExpression::SIMPLE) {

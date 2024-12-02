@@ -1,7 +1,7 @@
+#pragma once
 #include "structs.h"
 
 using namespace std;
-
 
 
 class Lexer {
@@ -24,7 +24,7 @@ public:
 
 private:
     std::unordered_set<std::string> con = { "pi", "e" };
-    std::unordered_set<std::string> func = { "sin", "cos", "exp", "ln" };
+    std::unordered_set<std::string> func = { "sin", "cos", "exp", "log", "tan", "sqrt"};
     vector<token> result;
     std::string input;
     size_t pos;

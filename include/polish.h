@@ -11,7 +11,7 @@ class polishConverter {
 private:
     // Приоритет операций
     std::unordered_map<std::string, int> precedence = {
-        {"+", 1}, {"-", 1}, {"*", 2}, {"/", 2}, {"^", 3}
+        {"+", 1}, {"-", 1}, {"*", 2}, {"/", 2}, {"^", 3}, {"u-", 4}, {"u+", 4}
     };
 
     // Левоассоциативные операции
@@ -24,39 +24,53 @@ public:
     vector<token> toPolish(const std::vector<token>& tokens) {
         vector<token> output;
         std::stack<token> operators; //стек для операторов
+        bool expectUnary = true;
 
         for (const token& token : tokens) {
             switch (token.type) {
             case tokenType::NUMBER:
             case tokenType::VARIABLE:
                 output.push_back(token);
+                expectUnary = false;
                 break;
 
             case tokenType::FUNCTION:
                 operators.push(token);
+                expectUnary = true;
                 break;
 
             case tokenType::OPERATOR: {
-                while (!operators.empty() && operators.top().type != tokenType::PARENTHESIS && ((leftAssociative[token.value] && precedence[token.value] <= precedence[operators.top().value]) ||
-                        (!leftAssociative[token.value] && precedence[token.value] < precedence[operators.top().value]))) {
+                std::string op = token.value;
+
+                // Если ожидается унарный оператор
+                if (expectUnary) {
+                    if (op == "-") op = "u-";
+                    else if (op == "+") op = "u+";
+                }
+
+                while (!operators.empty() && operators.top().type != tokenType::PARENTHESIS && ((leftAssociative[op] && precedence[op] <= precedence[operators.top().value]) ||
+                        (!leftAssociative[op] && precedence[op] < precedence[operators.top().value]))) {
 
                     output.push_back(operators.top());
                     operators.pop();
                 }
-                operators.push(token);
+
+                operators.push(struct::token(tokenType::OPERATOR, op));
+                expectUnary = true;
                 break;
             }
 
             case tokenType::PARENTHESIS:
                 if (token.value == "(") {
                     operators.push(token);
+                    expectUnary = true;
                 }
                 else if (token.value == ")") {
                     while (!operators.empty() && operators.top().value != "(") {
                         output.push_back(operators.top());
                         operators.pop();
                     }
-                    if (operators.empty() || operators.top().value != "(") {
+                    if (operators.empty()) {
                         throw std::runtime_error("Mismatched parentheses");
                     }
                     operators.pop(); // Удаляем "("
@@ -67,6 +81,7 @@ public:
                         operators.pop();
                     }
                 }
+                expectUnary = false;
                 break;
 
             default:
@@ -104,14 +119,25 @@ public:
             }
             else if (token.type == tokenType::OPERATOR) {
                 // Если токен — оператор, извлекаем два числа из стека и выполняем операцию
-                if (stack.size() < 2) throw invalid_argument("Недостаточно операндов для операции");
 
-                double b = stack.top(); stack.pop();
-                double a = stack.top(); stack.pop();
+                if ((token.value == "u-" || token.value == "u+") && stack.size() > 0) {
+                    
+                    double a = stack.top(); stack.pop();
 
-                double result = applyOperator(token.value, a, b);
-                stack.push(result);
-            }
+                    double result = applyUnaryOperator(token.value, a);
+                    stack.push(result);
+                }
+
+                else {
+                    if (stack.size() < 2) throw invalid_argument("Недостаточно операндов для операции");
+
+                    double b = stack.top(); stack.pop();
+                    double a = stack.top(); stack.pop();
+
+                    double result = applyOperator(token.value, a, b);
+                    stack.push(result);
+                }  
+             }
             else if (token.type == tokenType::FUNCTION) {
                 // Если токен — функция, извлекаем одно число из стека и применяем функцию
                 if (stack.empty()) throw invalid_argument("Недостаточно операндов для функции");
@@ -146,11 +172,19 @@ private:
         throw invalid_argument("Неизвестный оператор: " + op);
     }
 
+    double applyUnaryOperator(const string& op, double a){
+        if (op == "u-") return -a;
+        if (op == "u+") return a;
+        throw invalid_argument("неизвестный оператор" + op);
+    }
+
     // Применить функцию
+    //i don't now how it works but it works
     double applyFunction(const std::string& func, double arg) {
         static const std::unordered_map<std::string, std::function<double(double)>> functions = {
             {"sin", [](double x) { return sin(x); }},
             {"cos", [](double x) { return cos(x); }},
+            {"exp", [](double x) { return exp(x); }},
             {"tan", [](double x) { return tan(x); }},
             {"log", [](double x) {
                 if (x <= 0) throw std::invalid_argument("Логарифм отрицательного числа или нуля");

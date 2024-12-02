@@ -6,6 +6,12 @@
 
 #define NOTHING std::numeric_limits<double>::max()
 
+//extern std::unordered_set<std::string> con;
+//extern std::unordered_set<std::string> func;
+
+
+//std::unordered_set<std::string> con = { "pi", "e" };
+//std::unordered_set<std::string> func = { "sin", "cos", "exp", "ln" };
 
 enum class tokenType {
     VARIABLE, // переменная
@@ -14,7 +20,7 @@ enum class tokenType {
     PARENTHESIS, // скобки
     EQUSL, //равно
     FUNCTION, //функция
-    CONST,  //константа 
+    CONST,  //констан
     END, // конец
     UNKNOWN // неизвестный токен
 };
