@@ -1,11 +1,6 @@
-set(target "gtest")
+cmake_minimum_required(VERSION 3.15)
 
-add_library(${target} STATIC gtest-all.cc)
+project(GTest)
 
-if((${CMAKE_CXX_COMPILER_ID} MATCHES "GNU" OR
-    ${CMAKE_CXX_COMPILER_ID} MATCHES "Clang") AND
-    (${CMAKE_SYSTEM_NAME} MATCHES "Linux"))
-    set(pthread "-pthread")
-endif()
-
-target_link_libraries(${target} ${pthread})
+add_library(gtest STATIC gtest-all.cc)
+target_include_directories(gtest PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
