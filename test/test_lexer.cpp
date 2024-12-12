@@ -17,7 +17,13 @@ TEST(Lexer, CanNotMakeTokensWithUnknowenToken) {
 }
 
 TEST(Lexer, CanMakeTokensWithKnowenToken) {
-	std::string test("+ - * / ^ 1 2 3 4 5 6 7 8 9 0 A B C a b c");
+	std::string test("0 + - * / ^ 1 2 3 4 5 6 7 8 9 0 A B C a b c");
+	Lexer l;
+	EXPECT_NO_THROW(l.makeTokens(test));
+}
+
+TEST(Lexer, CanMakeTokenZero) {
+	std::string test("0");
 	Lexer l;
 	EXPECT_NO_THROW(l.makeTokens(test));
 }

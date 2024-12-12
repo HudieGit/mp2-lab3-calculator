@@ -36,7 +36,6 @@ vector<token> polishConverter::toPolish(const std::vector<token>& tokens) {
         case tokenType::OPERATOR: {
             std::string op = token.value;
 
-            // Если ожидается унарный оператор
             if (expectUnary) {
                 if (op == "-") op = "u-";
                 else if (op == "+") op = "u+";
@@ -64,18 +63,17 @@ vector<token> polishConverter::toPolish(const std::vector<token>& tokens) {
                     output.push_back(operators.top());
                     operators.pop();
                 }
-                if (operators.empty()) {
-                    throw std::logic_error("you don't close parenthesis");
-                }
-                operators.pop(); // Удаляем "("
 
-                // Если после этого на вершине стека функция, выталкиваем её
+                operators.pop(); // удаляем "("
+
+                // если после этого на вершине стека функция, выталкиваем её
                 if (!operators.empty() && operators.top().type == tokenType::FUNCTION) {
                     output.push_back(operators.top());
                     operators.pop();
                 }
+                expectUnary = false;
             }
-            expectUnary = false;
+            
             break;
 
         default:
@@ -83,7 +81,7 @@ vector<token> polishConverter::toPolish(const std::vector<token>& tokens) {
         }
     }
 
-    // Выталкиваем оставшиеся операторы
+    // выталкиваем оставшиеся операторы
     while (!operators.empty()) {
         if (operators.top().type == tokenType::PARENTHESIS) {
             throw 1;
@@ -96,13 +94,12 @@ vector<token> polishConverter::toPolish(const std::vector<token>& tokens) {
 }
 
 
-
 double RPNCalculator::evaluate(const vector<token>& tokens, const unordered_map<string, double>& variables) {
     std::stack<double> stack;
 
     for (const token& token : tokens) {
         if (token.type == tokenType::NUMBER) {
-            // Если токен — число, преобразуем и кладем в стек
+            // Если токен — число, то преобразуем и в стек
             stack.push(stod(token.value));
         }
         else if (token.type == tokenType::VARIABLE) {
@@ -110,7 +107,7 @@ double RPNCalculator::evaluate(const vector<token>& tokens, const unordered_map<
             stack.push(it->second);
         }
         else if (token.type == tokenType::OPERATOR) {
-            // Если токен — оператор, извлекаем два числа из стека и выполняем операцию
+            // Если токен — оператор, то извлекаем два числа из стека и выполняем операцию
 
             if ((token.value == "u-" || token.value == "u+") && stack.size() > 0) {
 
@@ -131,7 +128,7 @@ double RPNCalculator::evaluate(const vector<token>& tokens, const unordered_map<
             }
         }
         else if (token.type == tokenType::FUNCTION) {
-            // Если токен — функция, извлекаем одно число из стека и применяем функцию
+            // если токен — функция, то извлекаем одно число из стека и применяем функцию
             if (stack.empty()) throw std::logic_error("function must has a parameter");
 
             double arg = stack.top(); stack.pop();
@@ -143,7 +140,7 @@ double RPNCalculator::evaluate(const vector<token>& tokens, const unordered_map<
         }
     }
 
-    // В стеке должно остаться ровно одно значение — результат вычисления
+    // В стеке должен остаться результат вычисления
     if (stack.size() != 1) throw std::exception("you forgot an operation");
 
     return stack.top();

@@ -77,14 +77,21 @@ token Lexer::tokenVariable() {
 //пытаемся в числа
 token Lexer::tokenNumber() {
     size_t startPos = pos;
+    if (input.at(pos) == '0') {
+        pos++;
 
-    if (pos + 1 < input.length() && input.at(pos) == '0' && input.at(pos + 1) == '.') {
-        pos += 2;
-        while (pos < input.length() && isdigit(input.at(pos))) {
-            pos++;
+        if (pos < input.length() && input.at(pos) == '0') {
+            throw std::logic_error("wrong a number");
+        }
+
+        if (pos < input.length() && input.at(pos) == '.') {
+            pos += 1;
+            while (pos < input.length() && isdigit(input.at(pos))) {
+                pos++;
+            }
         }
     }
-    else if (pos + 1 < input.length() && ( (input.at(pos) != '0') || (input.at(pos) == '0' && input.at(pos + 1) != '0'))) {
+    else if (pos < input.length() && input.at(pos) != '0') {
         while (pos < input.length() && isdigit(input.at(pos))) {
             pos++;
         }

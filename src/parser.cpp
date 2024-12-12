@@ -91,7 +91,7 @@ bool Parser::checkVarInEXPR(const vector<token>& tokens, const unordered_map<str
     for (const token& token : tokens) {
 
         if (token.type == tokenType::VARIABLE && !variables.count(token.value)) {
-            throw std::logic_error("you are tring to use an uninitialized variable");
+            throw std::logic_error("you are trying to use an uninitialized variable");
         }
 
     }
