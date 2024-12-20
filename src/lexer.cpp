@@ -10,7 +10,7 @@ vector<token> Lexer::makeTokens(const std::string& inputStr) {
 
     token token = nextToken();
     while (token.type != tokenType::END) {
-        if (token.type == tokenType::UNKNOWN) throw std::invalid_argument("invaliad symbol");
+        if (token.type == tokenType::UNKNOWN) throw std::string("invaliad symbol");
         result.push_back(token);
         token = nextToken();
     }
@@ -33,7 +33,7 @@ token Lexer::nextToken() {
     }
 
     // если символ цифра, то пытаемся собрать число
-    else if (isdigit(current)) {
+    else if (isdigit(current) || current == '.') {
         return tokenNumber();
     }
 
@@ -77,34 +77,33 @@ token Lexer::tokenVariable() {
 //пытаемся в числа
 token Lexer::tokenNumber() {
     size_t startPos = pos;
-    if (input.at(pos) == '0') {
+    int state = 0;
+    while (pos < input.size()) {
+        switch (state){
+        case 0:
+            if (input.at(pos) == '0') state = 1;
+            else if (input.at(pos) == '.') state = 3;
+            else if (isdigit(input.at(pos))) state = 2;
+            else state = 10;
+            break;
+        case 1:
+            if (input.at(pos) == '.') state = 3;
+            else if (input.at(pos) == '0') throw std::string("wrong the number");
+            else state = 10;
+            break;
+        case 2: 
+            if (isdigit(input.at(pos))) state = 2;
+            else if (input.at(pos) == '.') state = 3;
+            else state = 10;
+            break;
+        case 3:
+            if (isdigit(input.at(pos))) state = 3;
+            else if (input.at(pos) == '.') throw std::string("wrong the number");
+            else state = 10;
+            break;
+        }
+        if (state == 10) break;
         pos++;
-
-        if (pos < input.length() && input.at(pos) == '0') {
-            throw std::logic_error("wrong a number");
-        }
-
-        if (pos < input.length() && input.at(pos) == '.') {
-            pos += 1;
-            while (pos < input.length() && isdigit(input.at(pos))) {
-                pos++;
-            }
-        }
-    }
-    else if (pos < input.length() && input.at(pos) != '0') {
-        while (pos < input.length() && isdigit(input.at(pos))) {
-            pos++;
-        }
-        if (pos < input.length() && input.at(pos) == '.') {
-            pos++;
-            while (pos < input.length() && isdigit(input.at(pos))) {
-                pos++;
-            }
-        }
-    }
-
-    else {
-        throw std::logic_error("wrong a number");
     }
 
     return token(tokenType::NUMBER, input.substr(startPos, pos - startPos));

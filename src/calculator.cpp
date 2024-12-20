@@ -17,22 +17,9 @@ expression::expression(string& e) {
 	}
 
 void expression::newExpr() {
+	string m;
 	std::getline(std::cin, expr);
-	translator t;
-	//обработка строки и возможных ошибок
-	try {
-		value = t.logicNode(expr, variables, simpleExpr, value);
-		isError = false;
-	}
-	catch (const std::exception& e) {
-		isError = true;
-		type = typeExpression::ERROR;
-		std::cout << "Error: " << e.what() << std::endl;
-		//cout << "incorrect expression" << endl;
-	}
-	catch (...) {
-		std::cout << "incorrect expression";
-	}
+	newExpr();
 }
 
 void expression::newExpr(string& e) {
@@ -43,15 +30,11 @@ void expression::newExpr(string& e) {
 		value = t.logicNode(expr, variables, simpleExpr, value);
 		isError = false;
 	}
-	catch (const std::exception& e) {
+	catch (const std::string& e) {
 		isError = true;
 		type = typeExpression::ERROR;
-		std::cout << "Error: " << e.what() << std::endl;
-		//cout << "incorrect expression" << endl;
+		std::cout << "Error: " << e << std::endl;
 	} 
-	catch(...) {
-		std::cout << "incorrect expression";
-	}
 
 }
 

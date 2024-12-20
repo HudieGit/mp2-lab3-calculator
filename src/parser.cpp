@@ -6,7 +6,7 @@ bool Parser::checkSim(const vector<token>& tokens) {
     if (tokens.size() == 2 && tokens[0].type == tokenType::OPERATOR && (tokens[1].type == tokenType::NUMBER || tokens[1].type == tokenType::VARIABLE)) {
 
         if (tokens[0].value == "/" && tokens[1].value == "0") {
-            return false;
+            throw std::string("division by zero");
         }
         else {
             return true;
@@ -73,7 +73,7 @@ bool Parser::parserExp(const vector<token>& tokens) {
     }
 
     if (tokens[tokens.size() - 1].type == tokenType::OPERATOR) {
-        return false;
+        throw std::string("where is second number?");
     }
 
     else if (parCount == 0) {
@@ -81,17 +81,17 @@ bool Parser::parserExp(const vector<token>& tokens) {
     }
 
     else {
-        return false;
+        throw std::string("expression is wrong");
     }
 }
 
-bool Parser::checkVarInEXPR(const vector<token>& tokens, const unordered_map<string, double>& variables) { //на доработке
+bool Parser::checkVarInEXPR(const vector<token>& tokens, const unordered_map<string, double>& variables) { 
     //вызов проверки на допустимость всех существующих переменных
 
     for (const token& token : tokens) {
 
         if (token.type == tokenType::VARIABLE && !variables.count(token.value)) {
-            throw std::logic_error("you are trying to use an uninitialized variable");
+            throw std::string("you are trying to use an uninitialized variable");
         }
 
     }

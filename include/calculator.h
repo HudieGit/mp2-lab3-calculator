@@ -13,7 +13,7 @@ private:
 
 	double value = NOTHING;
 
-	bool isError = false;
+	bool isError;
 	string expr;
 	string simpleExpr = "";
 

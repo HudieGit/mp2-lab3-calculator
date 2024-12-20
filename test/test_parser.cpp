@@ -83,7 +83,7 @@ TEST(Parser, ExpressionLastOperator2) {
 	Lexer l;
 	vector<token> tokens = l.makeTokens(test);
 	Parser p;
-	EXPECT_FALSE(p.parserExp(tokens));
+	EXPECT_ANY_THROW(p.parserExp(tokens));
 }
 
 TEST(Parser, ExpressionLastOperator1) {
@@ -91,7 +91,7 @@ TEST(Parser, ExpressionLastOperator1) {
 	Lexer l;
 	vector<token> tokens = l.makeTokens(test);
 	Parser p;
-	EXPECT_FALSE(p.parserExp(tokens));
+	EXPECT_ANY_THROW(p.parserExp(tokens));
 }
 
 TEST(Parser, ExpressionErrorSkobki1) {
@@ -99,7 +99,7 @@ TEST(Parser, ExpressionErrorSkobki1) {
 	Lexer l;
 	vector<token> tokens = l.makeTokens(test);
 	Parser p;
-	EXPECT_FALSE(p.parserExp(tokens));
+	EXPECT_ANY_THROW(p.parserExp(tokens));
 }
 
 TEST(Parser, ExpressionErrorSkobki2) {
@@ -107,7 +107,7 @@ TEST(Parser, ExpressionErrorSkobki2) {
 	Lexer l;
 	vector<token> tokens = l.makeTokens(test);
 	Parser p;
-	EXPECT_FALSE(p.parserExp(tokens));
+	EXPECT_ANY_THROW(p.parserExp(tokens));
 }
 
 TEST(Parser, ExpressionErrorSkobki3) {
@@ -115,7 +115,7 @@ TEST(Parser, ExpressionErrorSkobki3) {
 	Lexer l;
 	vector<token> tokens = l.makeTokens(test);
 	Parser p;
-	EXPECT_FALSE(p.parserExp(tokens));
+	EXPECT_ANY_THROW(p.parserExp(tokens));
 }
 
 TEST(Parser, ExpressionErrorNoOperant) {

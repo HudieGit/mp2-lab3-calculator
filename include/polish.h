@@ -32,7 +32,7 @@ public:
 private:
     // Применить оператор
     double applyOperator(const string& op, double a, double b);
-
+    double applyConst(const string& con);
     double applyUnaryOperator(const string& op, double a);
     //i don't now how it works but it works
     double applyFunction(const std::string& func, double arg);

@@ -24,6 +24,7 @@ vector<token> polishConverter::toPolish(const std::vector<token>& tokens) {
         switch (token.type) {
         case tokenType::NUMBER:
         case tokenType::VARIABLE:
+        case tokenType::CONST:
             output.push_back(token);
             expectUnary = false;
             break;
@@ -75,16 +76,15 @@ vector<token> polishConverter::toPolish(const std::vector<token>& tokens) {
             }
             
             break;
-
         default:
-            throw std::logic_error("except parenthesis");
+            throw std::string("except parenthesis");
         }
     }
 
     // выталкиваем оставшиеся операторы
     while (!operators.empty()) {
         if (operators.top().type == tokenType::PARENTHESIS) {
-            throw 1;
+            throw std::string("eroor parenthesis");
         }
         output.push_back(operators.top());
         operators.pop();
@@ -102,6 +102,9 @@ double RPNCalculator::evaluate(const vector<token>& tokens, const unordered_map<
             // Если токен — число, то преобразуем и в стек
             stack.push(stod(token.value));
         }
+        else if (token.type == tokenType::CONST) {
+            stack.push(applyConst(token.value));
+        }
         else if (token.type == tokenType::VARIABLE) {
             auto it = variables.find(token.value);
             stack.push(it->second);
@@ -118,7 +121,7 @@ double RPNCalculator::evaluate(const vector<token>& tokens, const unordered_map<
             }
 
             else {
-                if (stack.size() < 2) throw std::logic_error("you need two operators for an operation");
+                if (stack.size() < 2) throw std::string("you need two operators for an operation");
 
                 double b = stack.top(); stack.pop();
                 double a = stack.top(); stack.pop();
@@ -129,19 +132,19 @@ double RPNCalculator::evaluate(const vector<token>& tokens, const unordered_map<
         }
         else if (token.type == tokenType::FUNCTION) {
             // если токен — функция, то извлекаем одно число из стека и применяем функцию
-            if (stack.empty()) throw std::logic_error("function must has a parameter");
+            if (stack.empty()) throw std::string("function must have a parameter");
 
             double arg = stack.top(); stack.pop();
             double result = applyFunction(token.value, arg);
             stack.push(result);
         }
         else {
-            throw std::invalid_argument("invalid operation");
+            throw std::string("invalid operation");
         }
     }
 
     // В стеке должен остаться результат вычисления
-    if (stack.size() != 1) throw std::exception("you forgot an operation");
+    if (stack.size() != 1) throw std::string("you forgot an operation");
 
     return stack.top();
 }
@@ -153,18 +156,18 @@ double RPNCalculator::applyOperator(const string& op, double a, double b) {
     if (op == "-") return a - b;
     if (op == "*") return a * b;
     if (op == "/") {
-        if (b == 0) throw std::exception("division by zero");
+        if (b == 0) throw std::string("division by zero");
         return a / b;
     }
     if (op == "^") return pow(a, b);
 
-    throw std::invalid_argument("invalid operation");
+    throw std::string("invalid operation");
 }
 
 double RPNCalculator::applyUnaryOperator(const string& op, double a) {
     if (op == "u-") return -a;
     if (op == "u+") return a;
-    throw 1;
+    throw string("error");
 }
 
 // Применить функцию
@@ -176,11 +179,11 @@ double RPNCalculator::applyFunction(const std::string& func, double arg) {
         {"exp", [](double x) { return exp(x); }},
         {"tan", [](double x) { return tan(x); }},
         {"log", [](double x) {
-            if (x <= 0) throw std::logic_error("argument of log must be more than zero");
+            if (x <= 0) throw std::string("argument of log must be more than zero");
             return log(x);
         }},
         {"sqrt", [](double x) {
-            if (x < 0) throw std::logic_error("argument of sqrt must be more than zero");
+            if (x < 0) throw std::string("argument of sqrt must be more than zero");
             return sqrt(x);
         }},
     };
@@ -190,5 +193,11 @@ double RPNCalculator::applyFunction(const std::string& func, double arg) {
         return it->second(arg);
     }
 
-    throw 1;
+    throw string("don't found function");
+}
+
+
+double RPNCalculator::applyConst(const string& con) {
+    if (con == "pi") return std::atan(1) * 4;
+    else if (con == "e") return std::exp(1);
 }

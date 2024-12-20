@@ -41,7 +41,7 @@ void translator::setTypeExp(const vector<token>& tokens, const unordered_map<str
 
 double translator::logicNode(const string& str, unordered_map<string, double>& variables, string& simpleStr, double& lastResult) {
 
-    if (str.empty()) throw std::runtime_error("try to type an expression");
+    if (str.empty()) throw std::string("try to type an expression");
     vector<token> tokens = l.makeTokens(str); //создали токены
     setTypeExp(tokens, variables, simpleStr, lastResult); //узнали тип выражения
 
@@ -63,13 +63,13 @@ double translator::logicNode(const string& str, unordered_map<string, double>& v
     else if (typeExp == typeExpression::SET) {
 
         if (tokens[0].type == tokenType::CONST) {
-            throw std::runtime_error("you can't change const variable");
+            throw std::string("you can't change const variable");
         }
 
         else if (tokens[0].type == tokenType::FUNCTION) {
-            throw std::runtime_error("you can't use name of function for variable");
+            throw std::string("you can't use name of function for variable");
         }
-
+        
 
         vector<token> subTokens(tokens.begin() + 2, tokens.end());
         variables[tokens[0].value] = cal.evaluate(polish.toPolish(subTokens), variables);
@@ -84,6 +84,7 @@ double translator::logicNode(const string& str, unordered_map<string, double>& v
     }
 
     else if (typeExp == typeExpression::ERROR) {
+        throw std::string("expression is wrong");
     }
 
     return result;
